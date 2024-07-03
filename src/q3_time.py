@@ -1,4 +1,36 @@
+import json
+from collections import defaultdict
+import re
 from typing import List, Tuple
 
+def extract_mentions(text: str) -> List[str]:
+    # Utilizamos regex para encontrar las menciones de usuario (@username)
+    mention_pattern = re.compile(r'@(\w+)')
+    return mention_pattern.findall(text)
+
 def q3_time(file_path: str) -> List[Tuple[str, int]]:
-    pass
+    mention_counts = defaultdict(int)
+    
+    with open(file_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            try:
+                tweet = json.loads(line)
+                if 'content' in tweet:
+                    mentions = extract_mentions(tweet['content'])
+                    for mention in mentions:
+                        mention_counts[mention] += 1
+            except (json.JSONDecodeError, KeyError):
+                continue
+
+    top_10_mentions = sorted(mention_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+    return top_10_mentions
+
+
+file_path = "C:/Users/mauri/OneDrive/Escritorio/Challenge Latam/farmers-protest-tweets-2021-2-4.json"
+try:
+    top_10_mentions = q3_time(file_path)
+    print(top_10_mentions)
+except FileNotFoundError:
+    print(f"File not found: {file_path}. Please check the file path and try again.")
+except json.JSONDecodeError as e:
+    print(f"Error parsing JSON file: {e}")
