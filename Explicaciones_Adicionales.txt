@@ -1,0 +1,109 @@
+Trabajo en Google Colab
+
+Para el trabajo de todos los codigos y las funciones en la nube, por tema de optimizar el tiempo de trabajo, se utilizo la herramienta Google Colab (Simil Jupyter notebook)
+en el cual se encuentran las 6 soluciones con las explicacion de cada codigo y los requerimientos para su correcto uso.
+
+Trabajo en local
+
+Para las mediciones optimas de tiempo de ejecucion y uso de memoria se trabajaron los mismos codigos pero utilizando las librerias [memory-profiler] y [py-spy]. Lo cual
+entrego los siguientes resultados.
+
+Tiempo de ejecucion q1: 7 Segs
+Uso de memoria q1:
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+     7     29.9 MiB     29.9 MiB           1   @profile
+     8                                         def q1_memory(file_path: str) -> List[Tuple[date, str]]:
+     9     35.6 MiB     -0.1 MiB          27       date_tweet_counts = defaultdict(lambda: defaultdict(int)) #Inicializa el contador de tweets en 0
+    10                                         
+    11     36.1 MiB      0.0 MiB           2       with open(file_path, 'r', encoding='utf-8') as f:
+    12     36.1 MiB  -1056.5 MiB      117408           for line in f:
+    13     36.1 MiB  -1058.3 MiB      117407               try:
+    14     36.1 MiB  -1055.1 MiB      117407                   tweet = json.loads(line)
+    15     36.1 MiB  -1057.6 MiB      117407                   tweet_date = datetime.strptime(tweet['date'], "%Y-%m-%dT%H:%M:%S%z").date()
+    16     36.1 MiB  -1058.1 MiB      117407                   username = tweet['user']['username']
+    17     36.1 MiB  -1057.0 MiB      117407                   date_tweet_counts[tweet_date][username] += 1
+    18                                                     except (json.JSONDecodeError, KeyError, ValueError) as e:
+    19                                                         continue
+    20                                         
+    21     36.1 MiB      0.0 MiB          27       top_10_dates = sorted(date_tweet_counts.items(), key=lambda x: sum(x[1].values()), reverse=True)[:10]
+    22     36.1 MiB      0.0 MiB       88329       result = [(tweet_date, max(users.items(), key=lambda x: x[1])[0]) for tweet_date, users in top_10_dates]
+    23                                         
+    24     36.1 MiB      0.0 MiB           1       return result
+
+Tiempo de ejecucion q2: 4 Segs
+Uso de memoria q2:
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    12     34.6 MiB     34.6 MiB           1   @profile
+    13                                         def q2_memory(file_path: str) -> List[Tuple[str, int]]:
+    14     34.6 MiB      0.0 MiB           1       emoji_counts = defaultdict(int)
+    15     34.8 MiB      0.2 MiB           1       emoji_pattern = re.compile(r'[\U0001F000-\U0001FFFF]|[\U00002000-\U00003FFF]', flags=re.UNICODE)  # Patrón para emojis Unicode
+    16                                             
+    17     36.1 MiB      0.0 MiB           2       with open(file_path, 'r', encoding='utf-8') as f:
+    18     36.1 MiB      1.0 MiB      117408           for line in f:
+    19     36.1 MiB      0.0 MiB      117407               try:
+    20     36.1 MiB      0.2 MiB      117407                   tweet = json.loads(line)
+    21     36.1 MiB      0.0 MiB      117407                   if 'content' in tweet:
+    22     36.1 MiB      0.0 MiB      117407                       emojis = emoji_pattern.findall(tweet['content'])
+    23     36.1 MiB      0.0 MiB      117407                       valid_emojis = filter(is_emoji, emojis)  # Filtrar solo emojis válidos
+    24     36.1 MiB      0.0 MiB      163039                       for emoji in valid_emojis:
+    25     36.1 MiB      0.0 MiB       45632                           emoji_counts[emoji] += 1
+    26                                                     except (json.JSONDecodeError, KeyError):
+    27                                                         continue
+    28                                         
+    29     36.1 MiB      0.0 MiB        1279       top_10_emojis = sorted(emoji_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+    30     36.1 MiB      0.0 MiB           1       return top_10_emojis
+
+Tiempo de ejecucion q3: 4 Segs
+Uso de memoria q3:
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    12     29.8 MiB     29.8 MiB           1   @profile
+    13                                         def q3_memory(file_path: str) -> List[Tuple[str, int]]:
+    14     29.8 MiB      0.0 MiB           1       mention_counts = defaultdict(int)
+    15                                             
+    16     32.1 MiB     -0.4 MiB           2       with open(file_path, 'r', encoding='utf-8') as f:
+    17     32.5 MiB  -9904.7 MiB      117408           for line in f:
+    18     32.5 MiB  -9905.7 MiB      117407               try:
+    19     32.5 MiB  -9904.2 MiB      117407                   tweet = json.loads(line)
+    20     32.5 MiB  -9905.0 MiB      117407                   if 'content' in tweet:
+    21                                                             # Utilizamos generadores para evitar almacenar todos los tweets en memoria
+    22     32.5 MiB  -9905.0 MiB      117407                       mentions = extract_mentions(tweet['content'])
+    23     32.5 MiB -18673.0 MiB      221473                       for mention in mentions:
+    24     32.5 MiB  -8767.4 MiB      104066                           mention_counts[mention] += 1
+    25                                                     except (json.JSONDecodeError, KeyError):
+    26                                                         continue
+    27                                         
+    28                                             # Ordenamos y seleccionamos los top 10 en base a la cuenta de menciones
+    29     33.3 MiB      1.1 MiB       31351       top_10_mentions = sorted(mention_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+    30                                             
+    31                                             # Liberamos memoria explícitamente si es necesario, con la finalidad de poder correr diferentes instancias con menor uso de memoria
+    32     32.5 MiB     -0.8 MiB           1       del mention_counts
+    33                                             
+    34     32.5 MiB      0.0 MiB           1       return top_10_mentions
+
+
+Puntos de mejora
+
+El principal punto de mejora se encuentra previo al trabajo en los scripts y corresponde a la limpieza y manejo de los datos. Dado que hay filas en el archivo 
+"farmers-protest-tweets-2021-2-4.json" que no presentan el mismo formato o tienes errores en su formato, esto dificulta o empeora el rendimiento de los scripts al momento
+de medir sus tiempo de respuesta y el uso de memoria. Una correcta limpieza y filtro de los datos permitiria minimizar el error y tener respuestas mas acertadas para la 
+toma de decisiones.
+
+Punto de mejora visual
+
+En cuanto a la mejora visual en la respuesta de los scripts podria enumerarse cada top 10 obtenido como respuesta para tener una vista mas amigable, pero esto perjudicaria
+el rendimiento de los scripts en terminos de tiempo de ejecucion y uso de memoria. Debido a lo anterior, seria mejor utilizar un software que se especialice en visualizacion
+de datos para darle mayor valor a las respuestas obtenidas con los scripts.
+
+Hardware
+
+Local
+RAM 16 GB 3200Mhz
+Disco 512GB SSD
+Procesador Intel core i5-10ma
+
+Nube
+RAM 12GB
+Disco 107GB
