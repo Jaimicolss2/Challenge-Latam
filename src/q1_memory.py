@@ -5,7 +5,7 @@ from typing import List, Tuple
 from memory_profiler import profile
 
 @profile
-def q1_time(file_path: str) -> List[Tuple[date, str]]:
+def q1_memory(file_path: str) -> List[Tuple[date, str]]:
     date_tweet_counts = defaultdict(lambda: defaultdict(int)) #Inicializa el contador de tweets en 0
 
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -26,7 +26,7 @@ def q1_time(file_path: str) -> List[Tuple[date, str]]:
 #Respuesta usando try/except para manejar los casos de error
 file_path = "C:/Users/mauri/OneDrive/Escritorio/Challenge Latam/farmers-protest-tweets-2021-2-4.json"
 try:
-    top_10_dates_users = q1_time(file_path)
+    top_10_dates_users = q1_memory(file_path)
     print(top_10_dates_users)
 except FileNotFoundError:
     print(f"File not found: {file_path}. Please check the file path and try again.")
