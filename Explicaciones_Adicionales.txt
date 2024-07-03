@@ -107,3 +107,10 @@ Procesador Intel core i5-10ma
 Nube
 RAM 12GB
 Disco 107GB
+
+Uso de librerias externas
+
+Se utiliza la libreria emoji en su version 1.7 debido a la incompatibilidad que presenta su ultima version. Al contener los unicodes de los emojis se hace mas simple
+llegar a una solucion sin tomar caracteres que no son alfanumericos y a la vez no son emojis, que pueden perjudicar el resultado final de la solicitud a los datos
+
+La explicacion de cada uno de los codigos y su comparativa se encuentran al final del archivo trabajado en Google Colab.
