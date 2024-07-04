@@ -86,10 +86,16 @@ Line #    Mem usage    Increment  Occurrences   Line Contents
 
 Puntos de mejora
 
-El principal punto de mejora se encuentra previo al trabajo en los scripts y corresponde a la limpieza y manejo de los datos. Dado que hay filas en el archivo 
+Automatizacion - este punto de mejora se encuentra previo al trabajo en los scripts y corresponde a la limpieza y manejo de los datos. Dado que hay filas en el archivo 
 "farmers-protest-tweets-2021-2-4.json" que no presentan el mismo formato o tienes errores en su formato, esto dificulta o empeora el rendimiento de los scripts al momento
 de medir sus tiempo de respuesta y el uso de memoria. Una correcta limpieza y filtro de los datos permitiria minimizar el error y tener respuestas mas acertadas para la 
 toma de decisiones.
+
+Utilizar scripts o herramientas que permitar asegurar la calidad de los datos y el manejo de errores, para poder corregir inconsistencias y/o valores atipicos, que
+podrian perjudicar la toma de decisiones o el proceso de trabajo con los datos.
+
+Optimizar las consultas, independiente del lenguaje de programacion que se utilice es indispensable el manejo de consultas optimizadas y estandarizadas, para mejorar 
+el entendimiento en trabajo de equipo y maximizar el desempeño a la hora de realizar un proyecto
 
 Punto de mejora visual
 
@@ -113,4 +119,4 @@ Uso de librerias externas
 Se utiliza la libreria emoji en su version 1.7 debido a la incompatibilidad que presenta su ultima version. Al contener los unicodes de los emojis se hace mas simple
 llegar a una solucion sin tomar caracteres que no son alfanumericos y a la vez no son emojis, que pueden perjudicar el resultado final de la solicitud a los datos
 
-La explicacion de cada uno de los codigos y su comparativa se encuentran al final del archivo trabajado en Google Colab. 
+La documentacion y explicacion de cada uno de los codigos y su comparativa se encuentran al final del archivo trabajado en Google Colab [challenge_Latam]. 
