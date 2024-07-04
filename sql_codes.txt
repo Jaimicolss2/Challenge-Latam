@@ -1,0 +1,113 @@
+q1_time
+
+SELECT 
+  DATE(timestamp) AS tweet_date, 
+  user.username, 
+  COUNT(*) AS tweet_count
+FROM 
+  `Latam_challenge.Tweets`
+GROUP BY 
+  tweet_date, user.username
+ORDER BY 
+  tweet_count DESC
+LIMIT 10;
+
+q2_time
+
+SELECT 
+  emoji, 
+  COUNT(*) AS emoji_count
+FROM (
+  SELECT 
+    REGEXP_EXTRACT_ALL(content, r'[\u1F300-\u1F64F\u1F680-\u1F6FF\u1F700-\u1F77F\u1F780-\u1F7FF\u1F800-\u1F8FF]') AS emojis
+  FROM 
+    `Latam_challenge.Tweets`
+  ), 
+  UNNEST(emojis) AS emoji
+GROUP BY 
+  emoji
+ORDER BY 
+  emoji_count DESC
+LIMIT 10;
+
+q3_time
+
+SELECT 
+  user.username, 
+  COUNT(*) AS mention_count
+FROM 
+  `Latam_challenge.Tweets`
+WHERE 
+  content LIKE '%@%'
+GROUP BY 
+  user.username
+ORDER BY 
+  mention_count DESC
+LIMIT 10;
+
+
+q1_memory
+
+WITH tweet_counts AS (
+  SELECT 
+    DATE(timestamp) AS tweet_date, 
+    user.username, 
+    COUNT(*) AS tweet_count
+  FROM 
+    `Latam_challenge.Tweets`
+  GROUP BY 
+    tweet_date, user.username
+)
+
+SELECT 
+  tweet_date,
+  ARRAY_AGG(STRUCT(username, tweet_count) ORDER BY tweet_count DESC LIMIT 1)[OFFSET(0)].username AS top_user
+FROM 
+  tweet_counts
+GROUP BY 
+  tweet_date
+ORDER BY 
+  SUM(tweet_count) DESC
+LIMIT 10;
+
+q2_memory
+
+WITH emoji_extraction AS (
+  SELECT 
+    REGEXP_EXTRACT_ALL(content, r'[\u1F300-\u1F64F\u1F680-\u1F6FF\u1F700-\u1F77F\u1F780-\u1F7FF\u1F800-\u1F8FF]') AS emojis
+  FROM 
+    `Latam_challenge.Tweets`
+)
+
+SELECT 
+  emoji, 
+  COUNT(*) AS emoji_count
+FROM 
+  emoji_extraction,
+  UNNEST(emojis) AS emoji
+GROUP BY 
+  emoji
+ORDER BY 
+  emoji_count DESC
+LIMIT 10;
+
+q3_memory
+
+WITH mentions AS (
+  SELECT 
+    REGEXP_EXTRACT_ALL(content, r'@\w+') AS mentioned_users
+  FROM 
+    `Latam_challenge.Tweets`
+)
+
+SELECT 
+  mention, 
+  COUNT(*) AS mention_count
+FROM 
+  mentions,
+  UNNEST(mentioned_users) AS mention
+GROUP BY 
+  mention
+ORDER BY 
+  mention_count DESC
+LIMIT 10;
